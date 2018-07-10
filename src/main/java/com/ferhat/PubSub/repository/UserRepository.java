@@ -1,6 +1,6 @@
-package com.ferhat.PubSub.repository;
+package com.ferhat.pubsub.repository;
 
-import com.ferhat.PubSub.entity.User;
+import com.ferhat.pubsub.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

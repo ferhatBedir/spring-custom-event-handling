@@ -1,9 +1,12 @@
-package com.ferhat.PubSub.service;
+package com.ferhat.pubsub.service;
 
 
-import com.ferhat.PubSub.entity.User;
-import com.ferhat.PubSub.publisher.UserEvent;
-import com.ferhat.PubSub.repository.UserRepository;
+import com.ferhat.pubsub.entity.Department;
+import com.ferhat.pubsub.entity.User;
+import com.ferhat.pubsub.model.UserModel;
+import com.ferhat.pubsub.publisher.UserEvent;
+import com.ferhat.pubsub.repository.DepartmentRepository;
+import com.ferhat.pubsub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import org.springframework.validation.SmartValidator;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,28 +26,41 @@ public class UserService {
     private ApplicationEventPublisher publisher;
     private SmartValidator smartValidator;
     private UserRepository userRepository;
+    private DepartmentRepository departmentRepository;
+    private DepartmentService departmentService;
 
     @Autowired
-    public UserService(ApplicationEventPublisher publisher, SmartValidator smartValidator, UserRepository userRepository) {
+    public UserService(ApplicationEventPublisher publisher,
+                       SmartValidator smartValidator,
+                       UserRepository userRepository,
+                       DepartmentService departmentService) {
         this.publisher = publisher;
         this.smartValidator = smartValidator;
         this.userRepository = userRepository;
+        this.departmentService = departmentService;
     }
 
 
-    public void addUserList(List<User> newUserList, HttpServletResponse httpServletResponse) throws IOException {
-        if (newUserList == null) {
-            System.out.println("User list is empty.");
-        } else {
-            for (User user : newUserList) {
-                User newUser = userRepository.findByUserId(user.getUserId());
-                if (newUser == null) {
+    public void addUserList(List<User> newUserList, HttpServletResponse httpServletResponse) {
+        newUserList.forEach(user -> {
+            User temp = userRepository.findByUserId(user.getUserId());
+            if (temp == null) {
+                try {
                     checkData(user, httpServletResponse);
-                } else {
-                    System.out.println("NewUser already register to Database.");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                addDepartment(user);
+            } else {
+                System.out.println("NewUser already register to Database.");
             }
-        }
+        });
+    }
+
+    private void addDepartment(User user) {
+        Department department = departmentService.getDepartmentByDepartmentId(user.getDepartmentId());
+        department.setUser(user);
+        departmentService.editDepartment(department);
     }
 
     public void editUser(User user) {
@@ -54,7 +71,7 @@ public class UserService {
             UserEvent userEvent = new UserEvent(this, user);
             publisher.publishEvent(userEvent);
         } else {
-            System.out.println("User already register to Database.");
+            System.out.println("User not found.");
         }
     }
 
@@ -64,6 +81,18 @@ public class UserService {
 
     public List<User> getUserByUserName(String userName) {
         return userRepository.findOneByUserFirstNameIgnoreCase(userName);
+    }
+
+    public List<UserModel> getUserModelByUserName(String userName) {
+        List<User> users = userRepository.findOneByUserFirstNameIgnoreCase(userName);
+        List<UserModel> userModels = new ArrayList<>();
+        if (users == null || users.isEmpty()) {
+            throw new NullPointerException("User List is null or empty.");
+        }
+        for (User user : users) {
+            userModels.add(convertToModel(user));
+        }
+        return userModels;
     }
 
     public List<User> getAllusers() {
@@ -77,6 +106,19 @@ public class UserService {
         } else {
             System.out.println("User not found in Database.");
         }
+    }
+
+    public void deleteAllUser() {
+        userRepository.deleteAll();
+        System.out.println("All users deleted.");
+    }
+
+    private UserModel convertToModel(User entity) {
+        UserModel model = new UserModel();
+        model.setUserFirstName(entity.getUserFirstName());
+        model.setUserLastName(entity.getUserLastName());
+        model.setUserEmail(entity.getUserEmail());
+        return model;
     }
 
     public void checkData(User user, HttpServletResponse httpServletResponse) throws IOException {

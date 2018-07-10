@@ -1,9 +1,9 @@
-package com.ferhat.PubSub.updateeventlistener;
+package com.ferhat.pubsub.updateeventlistener;
 
-import com.ferhat.PubSub.entity.Department;
-import com.ferhat.PubSub.entity.User;
-import com.ferhat.PubSub.publisher.UserEvent;
-import com.ferhat.PubSub.repository.DepartmentRepository;
+import com.ferhat.pubsub.entity.Department;
+import com.ferhat.pubsub.entity.User;
+import com.ferhat.pubsub.publisher.UserEvent;
+import com.ferhat.pubsub.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;

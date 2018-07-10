@@ -1,4 +1,4 @@
-package com.ferhat.PubSub.config;
+package com.ferhat.pubsub.config;
 
 
 import org.springframework.context.annotation.Bean;

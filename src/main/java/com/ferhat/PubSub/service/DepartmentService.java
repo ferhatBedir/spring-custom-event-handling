@@ -1,7 +1,7 @@
-package com.ferhat.PubSub.service;
+package com.ferhat.pubsub.service;
 
-import com.ferhat.PubSub.entity.Department;
-import com.ferhat.PubSub.repository.DepartmentRepository;
+import com.ferhat.pubsub.entity.Department;
+import com.ferhat.pubsub.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -25,8 +25,8 @@ public class DepartmentService {
         this.smartValidator = smartValidator;
     }
 
-    public void addDepartment(List<Department> departmentList, HttpServletResponse httpServletResponse) throws IOException {
-        if (departmentList != null || departmentList.isEmpty()) {
+    public void addDepartments(List<Department> departmentList, HttpServletResponse httpServletResponse) throws IOException {
+        if (departmentList == null || departmentList.isEmpty()) {
             System.out.println("DepartmentList is empty.");
         }
         for (Department newDepartment : departmentList) {
@@ -48,6 +48,10 @@ public class DepartmentService {
         return departmentRepository.findAll();
     }
 
+    public Department getDepartmentByDepartmentId(String departmentId) {
+        return departmentRepository.findByDepartmentId(departmentId);
+    }
+
     public void checkData(Department department, HttpServletResponse httpServletResponse) throws IOException {
         DataBinder binder = new DataBinder(department);
         binder.validate();
@@ -61,5 +65,14 @@ public class DepartmentService {
         }
     }
 
+    public void editDepartment(Department newDepartment) {
+        departmentRepository.save(newDepartment);
+        System.out.println("Department updated.");
+    }
 
+
+    public void deleteAllDepartment() {
+        departmentRepository.deleteAll();
+        System.out.println("All Departments deleted.");
+    }
 }

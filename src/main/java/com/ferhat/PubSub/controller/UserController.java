@@ -1,7 +1,9 @@
-package com.ferhat.PubSub.controller;
+package com.ferhat.pubsub.controller;
 
-import com.ferhat.PubSub.entity.User;
-import com.ferhat.PubSub.service.UserService;
+import com.ferhat.pubsub.entity.User;
+import com.ferhat.pubsub.model.UserModel;
+import com.ferhat.pubsub.service.UserService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,11 @@ public class UserController {
 
     @PostMapping("/addlist")
     public void addUserList(@RequestBody List<User> users, HttpServletResponse httpServletResponse) throws IOException {
-        userService.addUserList(users, httpServletResponse);
+        if (users == null || users.isEmpty()) {
+            System.out.println("please check parameters.");
+        } else {
+            userService.addUserList(users, httpServletResponse);
+        }
     }
 
     @PostMapping("/edit")
@@ -46,6 +52,11 @@ public class UserController {
         return userService.getUserByUserName(name);
     }
 
+    @GetMapping("/getmodelusername")
+    public List<UserModel> getUserModelByUserName(@RequestParam(value = "name") String userName) {
+        return userService.getUserModelByUserName(userName);
+    }
+
     @GetMapping("/getall")
     public List<User> getAllUser() {
         return userService.getAllusers();
@@ -54,5 +65,10 @@ public class UserController {
     @DeleteMapping("/deleteuserid")
     public void deleteUserByUserId(@RequestParam(value = "id") String userId) {
         userService.deleteUserByUserId(userId);
+    }
+
+    @DeleteMapping("/deleteall")
+    public void deleteAllUsers() {
+        userService.deleteAllUser();
     }
 }

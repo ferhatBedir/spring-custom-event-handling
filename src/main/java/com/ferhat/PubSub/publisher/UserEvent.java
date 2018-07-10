@@ -1,6 +1,6 @@
-package com.ferhat.PubSub.publisher;
+package com.ferhat.pubsub.publisher;
 
-import com.ferhat.PubSub.entity.User;
+import com.ferhat.pubsub.entity.User;
 import org.springframework.context.ApplicationEvent;
 
 

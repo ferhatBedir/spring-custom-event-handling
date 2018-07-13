@@ -1,6 +1,7 @@
 package com.ferhat.pubsub.service;
 
 import com.ferhat.pubsub.entity.Department;
+import com.ferhat.pubsub.model.DepartmentModel;
 import com.ferhat.pubsub.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.validation.SmartValidator;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,7 +54,33 @@ public class DepartmentService {
         return departmentRepository.findByDepartmentId(departmentId);
     }
 
-    public void checkData(Department department, HttpServletResponse httpServletResponse) throws IOException {
+    public List<DepartmentModel> getDepartmentModelByDepartmentName(String departmentName) {
+        List<Department> departments = departmentRepository.findOneByDepartmentNameIgnoreCase(departmentName);
+        if (departments == null) {
+            throw new NullPointerException("Department List is null or Empty");
+        }
+        List<DepartmentModel> departmentModels = new ArrayList<>();
+        departments.forEach(department -> departmentModels.add(convertToModel(department)));
+        return departmentModels;
+    }
+
+    public void editDepartment(Department newDepartment) {
+        departmentRepository.save(newDepartment);
+        System.out.println("Department updated.");
+    }
+
+    public void deleteAllDepartment() {
+        departmentRepository.deleteAll();
+        System.out.println("All Departments deleted.");
+    }
+
+    private DepartmentModel convertToModel(Department entity) {
+        DepartmentModel model = new DepartmentModel();
+        model.setDepartmentName(entity.getDepartmentName());
+        return model;
+    }
+
+    private void checkData(Department department, HttpServletResponse httpServletResponse) throws IOException {
         DataBinder binder = new DataBinder(department);
         binder.validate();
         binder.setValidator(smartValidator);
@@ -63,16 +91,5 @@ public class DepartmentService {
         } else {
             departmentRepository.save(department);
         }
-    }
-
-    public void editDepartment(Department newDepartment) {
-        departmentRepository.save(newDepartment);
-        System.out.println("Department updated.");
-    }
-
-
-    public void deleteAllDepartment() {
-        departmentRepository.deleteAll();
-        System.out.println("All Departments deleted.");
     }
 }

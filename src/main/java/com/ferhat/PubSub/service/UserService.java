@@ -26,7 +26,6 @@ public class UserService {
     private ApplicationEventPublisher publisher;
     private SmartValidator smartValidator;
     private UserRepository userRepository;
-    private DepartmentRepository departmentRepository;
     private DepartmentService departmentService;
 
     @Autowired
@@ -85,13 +84,11 @@ public class UserService {
 
     public List<UserModel> getUserModelByUserName(String userName) {
         List<User> users = userRepository.findOneByUserFirstNameIgnoreCase(userName);
-        List<UserModel> userModels = new ArrayList<>();
         if (users == null || users.isEmpty()) {
             throw new NullPointerException("User List is null or empty.");
         }
-        for (User user : users) {
-            userModels.add(convertToModel(user));
-        }
+        List<UserModel> userModels = new ArrayList<>();
+        users.forEach(user -> userModels.add(convertToModel(user)));
         return userModels;
     }
 
@@ -121,7 +118,7 @@ public class UserService {
         return model;
     }
 
-    public void checkData(User user, HttpServletResponse httpServletResponse) throws IOException {
+    private void checkData(User user, HttpServletResponse httpServletResponse) throws IOException {
         DataBinder binder = new DataBinder(user);
         binder.setValidator(smartValidator);
         binder.validate();

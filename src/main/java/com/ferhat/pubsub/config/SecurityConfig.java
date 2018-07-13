@@ -22,14 +22,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable();
+    protected void configure(HttpSecurity http) throws Exception {
+        http.anonymous().and().authorizeRequests()
+                .antMatchers("/*", "/public/**", "/v2/**", "/swagger/**").permitAll()
+                .antMatchers("/user/**", "/department/**").authenticated();
+
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         String encodedPassword = passwordEncoder.encode("123123");
-        auth.inMemoryAuthentication().withUser("user").password(encodedPassword).roles("USER");
+        auth.inMemoryAuthentication().withUser("ferhat").password(encodedPassword).roles("USER");
     }
 
 }

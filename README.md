@@ -16,4 +16,8 @@ WHEN APP RUN
      Users add to automatically in Department.
   4. For Example,
       User will be update.
-      When User updated, User will updated automatically in Department and save to Database. 
+      When User updated, User will updated automatically in Department and save to Database.
+  
+  FOR SWAGGER
+    if app is runing, you enter http://localhost:8080/swagger-ui.html.
+    You view swagger doc.
